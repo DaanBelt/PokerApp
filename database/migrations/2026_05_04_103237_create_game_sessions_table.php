@@ -11,11 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('cash_outs', function (Blueprint $table) {
+        Schema::create('game_sessions', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('player_session_id')->constrained()->cascadeOnDelete();
-            $table->decimal('amount', 8 , 2);
-            $table->string('status')->default('pending');
+            $table->string('name');
+            $table->timestamp('started_at')->nullable();
+            $table->timestamp('ended_at')->nullable();
             $table->timestamps();
         });
     }
@@ -25,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('cash_outs');
+        Schema::dropIfExists('game_sessions');
     }
 };

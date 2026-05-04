@@ -13,6 +13,8 @@ return new class extends Migration
     {
         Schema::create('player_sessions', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('player_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('game_session_id')->constrained()->cascadeOnDelete();
             $table->timestamps();
         });
     }
