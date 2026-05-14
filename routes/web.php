@@ -8,56 +8,20 @@ use App\Models\BuyIn;
 use App\Models\CashOut;
 use App\http\Requests\StoreBuyInRequest;
 use App\http\Requests\StoreCashOutRequest;
+use App\http\Controllers\GameSessionController;
+use App\http\Controllers\BuyInController;
+use App\http\Controllers\CashOutController;
 
-Route::get('/', function () {
-    $sessions = GameSession::all();
-    return view('startpage', compact('sessions'));
-});
+Route::get('/', [GameSessionController::class, 'index']);
 
-Route::post('/sessions', function() {
-    $session = GameSession::create([
-        'name' => request('name'),
-        'started_at' => now()
-    ]);
+Route::post('/sessions', [GameSessionController::class, 'store']);
 
-    return redirect('/sessions/' . $session->id);
-}); 
+Route::get('/sessions/{session}', [GameSessionController::class, 'show']);
 
-Route::get('/sessions/{session}', function(GameSession $session){
-    return view('game-session', compact('session'));
-});
+Route::post('/addplayer/{session}', [PlayerSessionController::class, 'store']);
 
-Route::post('/addplayer/{session}', function(GameSession $session){
-    $player = Player::create([
-        'display_name' => request('display_name')
-    ]);
-    
-    $playerSession = PlayerSession::create([
-        'player_id' => $player->id,
-        'game_session_id' => $session->id
-    ]);
-    
-    return redirect('/sessions/' . $session->id);
-});
+//Buyin
+Route::post('/buyin/{session}', [BuyInController::class, 'store']);
 
-Route::post('/buyin/{session}', function(GameSession $session, StoreBuyInRequest $request){
-    $data = $request->validated();
-
-    BuyIn::create([
-        'player_session_id' => $data['player_session_id'],
-        'amount' => $data['amount'],
-    ]);
-
-    return redirect('/sessions/' . $session->id);
-});
-
-Route::Post('/cashout/{session}', function(GameSession $session, StoreCashOutRequest $request){
-    $data = $request->validated();
-
-    $cashOut = CashOut::create([
-        'player_session_id' => $data['player_session_id'],
-        'amount' => $data['amount']
-    ]);
-
-    return redirect('/sessions/' . $session->id);
-});
+//Cashout 
+Route::post('/cashout/{session}', [CashOutController::class, 'store']);
